@@ -6,6 +6,7 @@ final class CaptureViewModel: ObservableObject {
     @Published private(set) var isCapturing = false
     @Published private(set) var isBackgroundProcessing = false
     @Published private(set) var processingPhase = "idle"
+    @Published private(set) var availablePreRollSeconds: Double = 0.0
     @Published private(set) var authorizationState: CameraSessionManager.AuthorizationState = .unknown
     @Published var selectedMode: CaptureMode = .stablePostRoll
     @Published var latestMoment: MomentAsset?
@@ -60,6 +61,10 @@ final class CaptureViewModel: ObservableObject {
         coordinator.$processingPhase
             .receive(on: DispatchQueue.main)
             .assign(to: &$processingPhase)
+
+        coordinator.$availablePreRollSeconds
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$availablePreRollSeconds)
 
         cameraManager.$authorizationState
             .receive(on: DispatchQueue.main)

@@ -11,15 +11,16 @@ enum MomentVideoComposerError: Error {
 final class MomentVideoComposer {
     func compose(snapshot: BufferedMediaSnapshot, postRoll: BufferedMediaSnapshot, outputURL: URL) throws -> Double {
         let allVideo = (snapshot.videoSamples + postRoll.videoSamples)
-            .sorted { CMTimeCompare($0.timestamp, $1.timestamp) < 0 }
+            .sorted { $0.wallClockTime < $1.wallClockTime }
 
-        guard let firstVideo = allVideo.first,
-              let videoFormatDescription = CMSampleBufferGetFormatDescription(firstVideo.sampleBuffer)
-        else {
+        guard let firstVideo = allVideo.first else {
             throw MomentVideoComposerError.missingVideoFormat
         }
 
-        let dimensions = CMVideoFormatDescriptionGetDimensions(videoFormatDescription)
+        let dimensions = CMVideoDimensions(
+            width: Int32(CVPixelBufferGetWidth(firstVideo.pixelBuffer.pixelBuffer)),
+            height: Int32(CVPixelBufferGetHeight(firstVideo.pixelBuffer.pixelBuffer))
+        )
         let writer = try AVAssetWriter(outputURL: outputURL, fileType: .mov)
         writer.shouldOptimizeForNetworkUse = false
 
@@ -57,18 +58,14 @@ final class MomentVideoComposer {
 
         writer.add(videoInput)
 
-        let startTimestamp = firstVideo.timestamp
+        let startWallClockTime = firstVideo.wallClockTime
         writer.startWriting()
         writer.startSession(atSourceTime: .zero)
 
         for sample in allVideo {
-            guard let imageBuffer = CMSampleBufferGetImageBuffer(sample.sampleBuffer) else {
-                throw MomentVideoComposerError.invalidPixelBuffer
-            }
-
-            let presentationTime = CMTimeSubtract(sample.timestamp, startTimestamp)
+            let presentationTime = CMTime(seconds: max(0.0, sample.wallClockTime - startWallClockTime), preferredTimescale: 600)
             waitUntilReady(for: videoInput)
-            guard adaptor.append(imageBuffer, withPresentationTime: presentationTime) else {
+            guard adaptor.append(sample.pixelBuffer.pixelBuffer, withPresentationTime: presentationTime) else {
                 throw writer.error ?? MomentVideoComposerError.appendFailed
             }
         }
@@ -87,8 +84,8 @@ final class MomentVideoComposer {
             throw finishError
         }
 
-        let endTimestamp = allVideo.last?.timestamp ?? startTimestamp
-        return max(0.0, CMTimeGetSeconds(CMTimeSubtract(endTimestamp, startTimestamp)))
+        let endWallClockTime = allVideo.last?.wallClockTime ?? startWallClockTime
+        return max(0.0, endWallClockTime - startWallClockTime)
     }
 
     private func waitUntilReady(for input: AVAssetWriterInput) {

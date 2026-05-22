@@ -27,6 +27,7 @@ final class CameraSessionManager: NSObject, ObservableObject {
 
     var onVideoSampleBuffer: ((CMSampleBuffer) -> Void)?
     var onAudioSampleBuffer: ((CMSampleBuffer) -> Void)?
+    var onRollingBufferUpdated: ((Double) -> Void)?
 
     func requestAccessAndConfigure() {
         #if targetEnvironment(simulator)
@@ -201,6 +202,7 @@ extension CameraSessionManager: AVCaptureVideoDataOutputSampleBufferDelegate, AV
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if output === videoOutput {
             rollingBuffer.appendVideoSampleBuffer(sampleBuffer)
+            onRollingBufferUpdated?(rollingBuffer.currentVideoDuration)
             onVideoSampleBuffer?(sampleBuffer)
         } else if output === audioOutput {
             rollingBuffer.appendAudioSampleBuffer(sampleBuffer)

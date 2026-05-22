@@ -24,6 +24,8 @@
 	<string>需要访问相机来拍摄动态照片。</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>需要访问麦克风来记录动态照片中的声音。</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>需要写入系统相册来保存选中的动态照片素材。</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

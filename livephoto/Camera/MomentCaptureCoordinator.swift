@@ -35,7 +35,7 @@ extension MomentCaptureError: LocalizedError {
         case .exportTimedOut:
             return "动态片段导出超时。"
         case .insufficientPreRollSamples:
-            return "回溯样本不足，请稍后再试。"
+            return "前 3 秒回溯还没攒满，请稍等约 3 秒后再拍。"
         case .statusUpdateFailed:
             return "拍摄结果保存失败。"
         }
@@ -46,6 +46,7 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
     @Published private(set) var isCapturing = false
     @Published private(set) var isBackgroundProcessing = false
     @Published private(set) var processingPhase = "idle"
+    @Published private(set) var availablePreRollSeconds: Double = 0.0
 
     private let cameraManager: CameraSessionManager
     private let store: MomentStore
@@ -64,6 +65,8 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
     private let recordingTimeoutSeconds: Double = 5
     private let exportTimeoutSeconds: Double = 12
     private let processingWatchdogSeconds: Double = 20
+    private let requiredExperimentalPreRollSeconds: Double = 2.7
+    private let targetExperimentalPostRollSeconds: Double = 1.0
 
     init(cameraManager: CameraSessionManager, store: MomentStore) {
         self.cameraManager = cameraManager
@@ -72,6 +75,11 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
         self.movieFileOutput = cameraManager.movieFileOutput
         cameraManager.onVideoSampleBuffer = { [weak self] sampleBuffer in
             self?.appendExperimentalPostRollSample(sampleBuffer)
+        }
+        cameraManager.onRollingBufferUpdated = { [weak self] duration in
+            Task { @MainActor [weak self] in
+                self?.availablePreRollSeconds = duration
+            }
         }
     }
 
@@ -195,11 +203,12 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
             throw MomentCaptureError.busy
         }
 
-        let preRollSnapshot = cameraManager.rollingBuffer.snapshot()
+        let availablePreRollSnapshot = cameraManager.rollingBuffer.snapshot()
 
-        guard preRollSnapshot.videoSamples.count >= 6 else {
+        guard availablePreRollSnapshot.videoDuration >= requiredExperimentalPreRollSeconds else {
             throw MomentCaptureError.insufficientPreRollSamples
         }
+        let preRollSnapshot = cameraManager.rollingBuffer.snapshot(targetVideoDuration: requiredExperimentalPreRollSeconds)
 
         await MainActor.run {
             isCapturing = true
@@ -256,6 +265,8 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
                     try await Task.sleep(for: .seconds(1))
                     await MainActor.run { self.processingPhase = "experimental:collect-post" }
                     let postRollSnapshot = self.endExperimentalPostRollCollection()
+                    let actualPreDuration = preRollSnapshot.videoDuration
+                    let actualPostDuration = postRollSnapshot.videoDuration
                     await MainActor.run { self.processingPhase = "experimental:exporting" }
                     let exportResult = try await self.withTimeout(seconds: self.exportTimeoutSeconds, failure: .exportTimedOut) {
                         try await self.exportManager.composeExperimentalClip(
@@ -271,9 +282,9 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
                         videoURL: exportResult.url,
                         status: .ready,
                         duration: exportResult.duration,
-                        preDuration: 3.0,
-                        postDuration: 1.0,
-                        coverTimestamp: 3.0
+                        preDuration: actualPreDuration,
+                        postDuration: actualPostDuration > 0 ? actualPostDuration : targetExperimentalPostRollSeconds,
+                        coverTimestamp: actualPreDuration
                     )
                     await MainActor.run { self.processingPhase = "experimental:done" }
                 } catch {
@@ -411,11 +422,14 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
 
     private func appendExperimentalPostRollSample(_ sampleBuffer: CMSampleBuffer) {
         let shouldCollect = postRollQueue.sync { isCollectingExperimentalPostRoll }
-        guard shouldCollect, let copied = sampleBuffer.deepCopy() else {
+        guard shouldCollect, let retainedPixelBuffer = RetainedPixelBuffer(sampleBuffer) else {
             return
         }
 
-        let sample = BufferedSample(sampleBuffer: copied, timestamp: CMSampleBufferGetPresentationTimeStamp(copied))
+        let sample = BufferedSample(
+            pixelBuffer: retainedPixelBuffer,
+            wallClockTime: ProcessInfo.processInfo.systemUptime
+        )
         postRollQueue.async {
             guard self.isCollectingExperimentalPostRoll else {
                 return

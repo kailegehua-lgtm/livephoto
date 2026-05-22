@@ -74,6 +74,16 @@ private actor MomentFileWorker {
         try? fileManager.removeItem(at: url)
     }
 
+    func deleteMoments(ids: Set<UUID>, remainingMoments: [MomentAsset], momentsDirectory: URL) throws {
+        for id in ids {
+            let folderURL = momentsDirectory.appendingPathComponent(id.uuidString, isDirectory: true)
+            if fileManager.fileExists(atPath: folderURL.path) {
+                try? fileManager.removeItem(at: folderURL)
+            }
+        }
+        try persistIndex(remainingMoments, to: momentsDirectory)
+    }
+
     private func persistIndex(_ moments: [MomentAsset], to momentsDirectory: URL) throws {
         if !fileManager.fileExists(atPath: momentsDirectory.path) {
             try fileManager.createDirectory(at: momentsDirectory, withIntermediateDirectories: true)
@@ -222,6 +232,16 @@ final class MomentStore: ObservableObject {
         } catch {
             moments = []
         }
+    }
+
+    func deleteMoments(ids: Set<UUID>) async throws {
+        guard !ids.isEmpty else {
+            return
+        }
+
+        let remainingMoments = moments.filter { !ids.contains($0.id) }
+        try await fileWorker.deleteMoments(ids: ids, remainingMoments: remainingMoments, momentsDirectory: momentsDirectory)
+        moments = remainingMoments
     }
 
     private var documentsDirectory: URL {

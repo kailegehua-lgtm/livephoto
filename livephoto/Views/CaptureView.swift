@@ -76,7 +76,7 @@ struct CaptureView: View {
                     }
 
                     if viewModel.selectedMode == .experimentalPreRoll {
-                        Text("实验模式会启用低帧率前 3 秒预缓存，预览可能不如稳定模式顺滑。")
+                        Text("实验模式会启用低帧率前 3 秒预缓存，预览可能不如稳定模式顺滑。当前已缓存 \(viewModel.availablePreRollSeconds, specifier: "%.1f") 秒。")
                             .foregroundStyle(.white)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
