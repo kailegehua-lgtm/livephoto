@@ -38,6 +38,9 @@ final class MomentVideoComposer {
             ]
         )
         videoInput.expectsMediaDataInRealTime = false
+        // Sample buffers arrive in the camera sensor's landscape coordinates.
+        // The app UI is portrait-first, so write a portrait transform into the track metadata.
+        videoInput.transform = CGAffineTransform(rotationAngle: .pi / 2)
 
         let adaptor = AVAssetWriterInputPixelBufferAdaptor(
             assetWriterInput: videoInput,
