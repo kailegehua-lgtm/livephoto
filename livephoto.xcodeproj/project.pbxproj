@@ -1,0 +1,349 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1A0000010000000000000001 /* LivePhotoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001010000000000000001 /* LivePhotoApp.swift */; };
+		1A0000020000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001020000000000000001 /* ContentView.swift */; };
+		1A0000030000000000000001 /* MomentAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001030000000000000001 /* MomentAsset.swift */; };
+		1A0000040000000000000001 /* MomentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001040000000000000001 /* MomentStore.swift */; };
+		1A0000050000000000000001 /* RollingMediaBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001050000000000000001 /* RollingMediaBuffer.swift */; };
+		1A0000060000000000000001 /* CameraSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001060000000000000001 /* CameraSessionManager.swift */; };
+		1A0000070000000000000001 /* MomentVideoComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001070000000000000001 /* MomentVideoComposer.swift */; };
+		1A0000080000000000000001 /* MomentCaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001080000000000000001 /* MomentCaptureCoordinator.swift */; };
+		1A0000090000000000000001 /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001090000000000000001 /* CameraPreviewView.swift */; };
+		1A00000A0000000000000001 /* CaptureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00010A0000000000000001 /* CaptureViewModel.swift */; };
+		1A00000B0000000000000001 /* CaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00010B0000000000000001 /* CaptureView.swift */; };
+		1A00000C0000000000000001 /* MomentListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00010C0000000000000001 /* MomentListView.swift */; };
+		1A00000D0000000000000001 /* MomentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00010D0000000000000001 /* MomentDetailView.swift */; };
+		1A00000E0000000000000001 /* PreviewImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00010E0000000000000001 /* PreviewImageLoader.swift */; };
+		1A00000F0000000000000001 /* VideoExportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001100000000000000001 /* VideoExportManager.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1A0000F10000000000000001 /* livephoto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = livephoto.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A0001010000000000000001 /* LivePhotoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivePhotoApp.swift; sourceTree = "<group>"; };
+		1A0001020000000000000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		1A0001030000000000000001 /* MomentAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentAsset.swift; sourceTree = "<group>"; };
+		1A0001040000000000000001 /* MomentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentStore.swift; sourceTree = "<group>"; };
+		1A0001050000000000000001 /* RollingMediaBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollingMediaBuffer.swift; sourceTree = "<group>"; };
+		1A0001060000000000000001 /* CameraSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSessionManager.swift; sourceTree = "<group>"; };
+		1A0001070000000000000001 /* MomentVideoComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentVideoComposer.swift; sourceTree = "<group>"; };
+		1A0001080000000000000001 /* MomentCaptureCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentCaptureCoordinator.swift; sourceTree = "<group>"; };
+		1A0001090000000000000001 /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
+		1A00010A0000000000000001 /* CaptureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureViewModel.swift; sourceTree = "<group>"; };
+		1A00010B0000000000000001 /* CaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureView.swift; sourceTree = "<group>"; };
+		1A00010C0000000000000001 /* MomentListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentListView.swift; sourceTree = "<group>"; };
+		1A00010D0000000000000001 /* MomentDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentDetailView.swift; sourceTree = "<group>"; };
+		1A00010E0000000000000001 /* PreviewImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewImageLoader.swift; sourceTree = "<group>"; };
+		1A00010F0000000000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1A0001100000000000000001 /* VideoExportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoExportManager.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1A0000D10000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1A0000A10000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				1A0000A20000000000000001 /* livephoto */,
+				1A0000A30000000000000001 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1A0000A20000000000000001 /* livephoto */ = {
+			isa = PBXGroup;
+			children = (
+				1A0001010000000000000001 /* LivePhotoApp.swift */,
+				1A0001020000000000000001 /* ContentView.swift */,
+				1A0000A40000000000000001 /* Models */,
+				1A0000A50000000000000001 /* Services */,
+				1A0000A60000000000000001 /* Camera */,
+				1A0000A70000000000000001 /* ViewModels */,
+				1A0000A80000000000000001 /* Views */,
+				1A00010F0000000000000001 /* Info.plist */,
+			);
+			path = livephoto;
+			sourceTree = "<group>";
+		};
+		1A0000A30000000000000001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000F10000000000000001 /* livephoto.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1A0000A40000000000000001 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1A0001030000000000000001 /* MomentAsset.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		1A0000A50000000000000001 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				1A0001040000000000000001 /* MomentStore.swift */,
+				1A00010E0000000000000001 /* PreviewImageLoader.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		1A0000A60000000000000001 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				1A0001050000000000000001 /* RollingMediaBuffer.swift */,
+				1A0001060000000000000001 /* CameraSessionManager.swift */,
+				1A0001070000000000000001 /* MomentVideoComposer.swift */,
+				1A0001100000000000000001 /* VideoExportManager.swift */,
+				1A0001080000000000000001 /* MomentCaptureCoordinator.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		1A0000A70000000000000001 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				1A00010A0000000000000001 /* CaptureViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		1A0000A80000000000000001 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				1A0001090000000000000001 /* CameraPreviewView.swift */,
+				1A00010B0000000000000001 /* CaptureView.swift */,
+				1A00010C0000000000000001 /* MomentListView.swift */,
+				1A00010D0000000000000001 /* MomentDetailView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1A0000C10000000000000001 /* livephoto */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A0000E30000000000000001 /* Build configuration list for PBXNativeTarget "livephoto" */;
+			buildPhases = (
+				1A0000B10000000000000001 /* Sources */,
+				1A0000D10000000000000001 /* Frameworks */,
+				1A0000B20000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = livephoto;
+			productName = livephoto;
+			productReference = 1A0000F10000000000000001 /* livephoto.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1A0000910000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					1A0000C10000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = 1A0000E10000000000000001 /* Build configuration list for PBXProject "livephoto" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 1A0000A10000000000000001;
+			productRefGroup = 1A0000A30000000000000001 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1A0000C10000000000000001 /* livephoto */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1A0000B20000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1A0000B10000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A0000010000000000000001 /* LivePhotoApp.swift in Sources */,
+				1A0000020000000000000001 /* ContentView.swift in Sources */,
+				1A0000030000000000000001 /* MomentAsset.swift in Sources */,
+				1A0000040000000000000001 /* MomentStore.swift in Sources */,
+				1A0000050000000000000001 /* RollingMediaBuffer.swift in Sources */,
+				1A0000060000000000000001 /* CameraSessionManager.swift in Sources */,
+				1A0000070000000000000001 /* MomentVideoComposer.swift in Sources */,
+				1A0000080000000000000001 /* MomentCaptureCoordinator.swift in Sources */,
+				1A0000090000000000000001 /* CameraPreviewView.swift in Sources */,
+				1A00000A0000000000000001 /* CaptureViewModel.swift in Sources */,
+				1A00000B0000000000000001 /* CaptureView.swift in Sources */,
+				1A00000C0000000000000001 /* MomentListView.swift in Sources */,
+				1A00000D0000000000000001 /* MomentDetailView.swift in Sources */,
+				1A00000E0000000000000001 /* PreviewImageLoader.swift in Sources */,
+				1A00000F0000000000000001 /* VideoExportManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1A0000E20000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		1A0000E40000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		1A0000E50000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = JH37NT98BX;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = livephoto/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.huangyin.livephoto;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		1A0000E60000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = JH37NT98BX;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = livephoto/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.huangyin.livephoto;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1A0000E10000000000000001 /* Build configuration list for PBXProject "livephoto" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A0000E20000000000000001 /* Debug */,
+				1A0000E40000000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1A0000E30000000000000001 /* Build configuration list for PBXNativeTarget "livephoto" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A0000E50000000000000001 /* Debug */,
+				1A0000E60000000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1A0000910000000000000001 /* Project object */;
+}
