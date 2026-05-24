@@ -20,7 +20,7 @@ enum CaptureMode: String, Codable, CaseIterable, Identifiable {
         case .stablePostRoll:
             return "主图 + 后 1 秒片段"
         case .experimentalPreRoll:
-            return "前 3 秒 + 后 1 秒低帧率回溯"
+            return "前 3 秒 + 后 1 秒滚动编码回溯"
         }
     }
 }

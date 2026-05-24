@@ -57,8 +57,6 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
     private var movieFileOutput: AVCaptureMovieFileOutput?
     private var recordingContinuation: CheckedContinuation<URL, Error>?
     private var pendingRecordingURL: URL?
-    private var isCollectingExperimentalPostRoll = false
-    private var pendingExperimentalPostRoll: [BufferedSample] = []
     private var backgroundHintTask: Task<Void, Never>?
     private let continuationQueue = DispatchQueue(label: "livephoto.capture.continuation")
     private let photoTimeoutSeconds: Double = 5
@@ -73,9 +71,6 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
         self.store = store
         super.init()
         self.movieFileOutput = cameraManager.movieFileOutput
-        cameraManager.onVideoSampleBuffer = { [weak self] sampleBuffer in
-            self?.appendExperimentalPostRollSample(sampleBuffer)
-        }
         cameraManager.onRollingBufferUpdated = { [weak self] duration in
             Task { @MainActor [weak self] in
                 self?.availablePreRollSeconds = duration
@@ -168,6 +163,11 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
                         postDuration: 1.0,
                         coverTimestamp: 0.0
                     )
+                    self.cameraManager.diagnostics.recordExport(
+                        url: recordedMovieURL,
+                        sourceFrameCount: nil,
+                        sourceDuration: 1.0
+                    )
                     await MainActor.run { self.processingPhase = "stable:done" }
                 } catch {
                     await MainActor.run { self.processingPhase = "stable:failed" }
@@ -203,12 +203,10 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
             throw MomentCaptureError.busy
         }
 
-        let availablePreRollSnapshot = cameraManager.rollingBuffer.snapshot()
-
-        guard availablePreRollSnapshot.videoDuration >= requiredExperimentalPreRollSeconds else {
+        let availablePreRollDuration = await cameraManager.rollingRecorder.availableDuration()
+        guard availablePreRollDuration >= requiredExperimentalPreRollSeconds else {
             throw MomentCaptureError.insufficientPreRollSamples
         }
-        let preRollSnapshot = cameraManager.rollingBuffer.snapshot(targetVideoDuration: requiredExperimentalPreRollSeconds)
 
         await MainActor.run {
             isCapturing = true
@@ -217,12 +215,11 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
         }
 
         do {
-            beginExperimentalPostRollCollection()
+            let postRollStartWallClockTime = ProcessInfo.processInfo.systemUptime
             let imageData = try await withTimeout(seconds: photoTimeoutSeconds, failure: .photoCaptureTimedOut) {
                 try await self.capturePhotoData()
             }
             guard let photoSize = imageSize(from: imageData) else {
-                _ = endExperimentalPostRollCollection()
                 await MainActor.run { isCapturing = false }
                 throw MomentCaptureError.invalidPhotoSize
             }
@@ -264,15 +261,16 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
                     )
                     try await Task.sleep(for: .seconds(1))
                     await MainActor.run { self.processingPhase = "experimental:collect-post" }
-                    let postRollSnapshot = self.endExperimentalPostRollCollection()
-                    let actualPreDuration = preRollSnapshot.videoDuration
-                    let actualPostDuration = postRollSnapshot.videoDuration
+                    let clipPlan = try await self.cameraManager.rollingRecorder.makeClipPlan(
+                        captureWallClockTime: postRollStartWallClockTime,
+                        preDuration: self.requiredExperimentalPreRollSeconds,
+                        postDuration: self.targetExperimentalPostRollSeconds
+                    )
+                    let actualPreDuration = clipPlan.actualPreDuration
+                    let actualPostDuration = clipPlan.actualPostDuration
                     await MainActor.run { self.processingPhase = "experimental:exporting" }
                     let exportResult = try await self.withTimeout(seconds: self.exportTimeoutSeconds, failure: .exportTimedOut) {
-                        try await self.exportManager.composeExperimentalClip(
-                            preRoll: preRollSnapshot,
-                            postRoll: postRollSnapshot
-                        )
+                        try await self.exportManager.composeExperimentalClip(from: clipPlan)
                     }
                     exportedURL = exportResult.url
                     await MainActor.run { self.processingPhase = "experimental:store-ready" }
@@ -286,9 +284,15 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
                         postDuration: actualPostDuration > 0 ? actualPostDuration : targetExperimentalPostRollSeconds,
                         coverTimestamp: actualPreDuration
                     )
+                    self.cameraManager.diagnostics.recordExport(
+                        url: exportResult.url,
+                        sourceFrameCount: exportResult.frameCount,
+                        sourceDuration: exportResult.duration
+                    )
                     await MainActor.run { self.processingPhase = "experimental:done" }
                 } catch {
-                    await MainActor.run { self.processingPhase = "experimental:failed" }
+                    let failureTag = self.experimentalFailureTag(from: error)
+                    await MainActor.run { self.processingPhase = "experimental:failed:\(failureTag)" }
                     if let exportedURL {
                         await MainActor.run {
                             self.store.removeTemporaryItemIfExists(at: exportedURL)
@@ -309,7 +313,6 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
 
             return moment
         } catch {
-            _ = endExperimentalPostRollCollection()
             cancelPhotoContinuationIfNeeded()
             await MainActor.run {
                 isCapturing = false
@@ -404,41 +407,6 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
         return CGSize(width: width, height: height)
     }
 
-    private func beginExperimentalPostRollCollection() {
-        postRollQueue.sync {
-            pendingExperimentalPostRoll = []
-            isCollectingExperimentalPostRoll = true
-        }
-    }
-
-    private func endExperimentalPostRollCollection() -> BufferedMediaSnapshot {
-        postRollQueue.sync {
-            isCollectingExperimentalPostRoll = false
-            let snapshot = BufferedMediaSnapshot(videoSamples: pendingExperimentalPostRoll, audioSamples: [])
-            pendingExperimentalPostRoll = []
-            return snapshot
-        }
-    }
-
-    private func appendExperimentalPostRollSample(_ sampleBuffer: CMSampleBuffer) {
-        let shouldCollect = postRollQueue.sync { isCollectingExperimentalPostRoll }
-        guard shouldCollect, let retainedPixelBuffer = RetainedPixelBuffer(sampleBuffer) else {
-            return
-        }
-
-        let sample = BufferedSample(
-            pixelBuffer: retainedPixelBuffer,
-            wallClockTime: ProcessInfo.processInfo.systemUptime
-        )
-        postRollQueue.async {
-            guard self.isCollectingExperimentalPostRoll else {
-                return
-            }
-
-            self.pendingExperimentalPostRoll.append(sample)
-        }
-    }
-
     private func makeProcessingWatchdog(for momentID: UUID) -> Task<Void, Never> {
         Task { [weak self] in
             guard let self else { return }
@@ -504,6 +472,21 @@ final class MomentCaptureCoordinator: NSObject, ObservableObject {
             let continuation = recordingContinuation
             recordingContinuation = nil
             return continuation
+        }
+    }
+
+    private func experimentalFailureTag(from error: Error) -> String {
+        switch error {
+        case RollingEncodedRecorderError.insufficientSegments:
+            return "segments"
+        case ExperimentalClipAssemblerError.emptyComposition:
+            return "empty"
+        case ExperimentalClipAssemblerError.exportSessionCreationFailed:
+            return "session"
+        case MomentCaptureError.exportTimedOut:
+            return "timeout"
+        default:
+            return "other"
         }
     }
 }

@@ -8,6 +8,7 @@ final class CaptureViewModel: ObservableObject {
     @Published private(set) var processingPhase = "idle"
     @Published private(set) var availablePreRollSeconds: Double = 0.0
     @Published private(set) var authorizationState: CameraSessionManager.AuthorizationState = .unknown
+    @Published private(set) var diagnosticsLine: String?
     @Published var selectedMode: CaptureMode = .stablePostRoll
     @Published var latestMoment: MomentAsset?
     @Published var errorMessage: String?
@@ -69,6 +70,10 @@ final class CaptureViewModel: ObservableObject {
         cameraManager.$authorizationState
             .receive(on: DispatchQueue.main)
             .assign(to: &$authorizationState)
+
+        cameraManager.diagnostics.onSnapshotUpdated = { [weak self] (snapshot: CaptureDiagnosticsSnapshot) in
+            self?.diagnosticsLine = snapshot.debugLine
+        }
 
         store.$moments
             .receive(on: DispatchQueue.main)
