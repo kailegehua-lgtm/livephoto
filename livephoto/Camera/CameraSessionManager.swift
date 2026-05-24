@@ -16,7 +16,8 @@ final class CameraSessionManager: NSObject, ObservableObject {
     let videoOutput = AVCaptureVideoDataOutput()
     let audioOutput = AVCaptureAudioDataOutput()
     let movieFileOutput = AVCaptureMovieFileOutput()
-    let rollingBuffer = RollingMediaBuffer()
+    let rollingRecorder = RollingEncodedRecorder()
+    let diagnostics = CaptureDiagnostics()
 
     @Published private(set) var authorizationState: AuthorizationState = .unknown
 
@@ -24,10 +25,16 @@ final class CameraSessionManager: NSObject, ObservableObject {
     private let videoOutputQueue = DispatchQueue(label: "livephoto.camera.video-output")
     private let audioOutputQueue = DispatchQueue(label: "livephoto.camera.audio-output")
     private var activeMode: CaptureMode = .stablePostRoll
+    private let rollingBufferStatusUpdateInterval: TimeInterval = 0.2
+    private var lastRollingBufferStatusUpdateWallClockTime: TimeInterval = 0
 
     var onVideoSampleBuffer: ((CMSampleBuffer) -> Void)?
     var onAudioSampleBuffer: ((CMSampleBuffer) -> Void)?
     var onRollingBufferUpdated: ((Double) -> Void)?
+
+    override init() {
+        super.init()
+    }
 
     func requestAccessAndConfigure() {
         #if targetEnvironment(simulator)
@@ -81,6 +88,9 @@ final class CameraSessionManager: NSObject, ObservableObject {
             }
             self.session.stopRunning()
         }
+        Task {
+            await self.rollingRecorder.stopRunning(removeFiles: true)
+        }
     }
 
     func setCaptureMode(_ mode: CaptureMode) {
@@ -92,8 +102,13 @@ final class CameraSessionManager: NSObject, ObservableObject {
             self.activeMode = mode
             self.configureOutputs(for: mode)
             if mode == .stablePostRoll {
-                self.rollingBuffer.reset()
+                Task {
+                    await self.rollingRecorder.stopRunning(removeFiles: true)
+                }
+            } else {
+                self.rollingRecorder.startRunning()
             }
+            self.lastRollingBufferStatusUpdateWallClockTime = 0
         }
     }
 
@@ -131,6 +146,9 @@ final class CameraSessionManager: NSObject, ObservableObject {
             let audioInput = try AVCaptureDeviceInput(device: audioDevice)
 
             try videoDevice.lockForConfiguration()
+            if let format = preferredVideoFormat(for: videoDevice, dimensions: CMVideoDimensions(width: 1280, height: 720), frameRate: 30) {
+                videoDevice.activeFormat = format
+            }
             let targetFrameDuration = CMTime(value: 1, timescale: 30)
             videoDevice.activeVideoMinFrameDuration = targetFrameDuration
             videoDevice.activeVideoMaxFrameDuration = targetFrameDuration
@@ -196,16 +214,48 @@ final class CameraSessionManager: NSObject, ObservableObject {
             }
         }
     }
+
+    private func preferredVideoFormat(
+        for device: AVCaptureDevice,
+        dimensions: CMVideoDimensions,
+        frameRate: Double
+    ) -> AVCaptureDevice.Format? {
+        device.formats
+            .filter { format in
+                let description = format.formatDescription
+                let formatDimensions = CMVideoFormatDescriptionGetDimensions(description)
+                guard formatDimensions.width == dimensions.width,
+                      formatDimensions.height == dimensions.height
+                else {
+                    return false
+                }
+
+                return format.videoSupportedFrameRateRanges.contains { range in
+                    range.minFrameRate <= frameRate && range.maxFrameRate >= frameRate
+                }
+            }
+            .max { left, right in
+                let leftRanges = left.videoSupportedFrameRateRanges
+                let rightRanges = right.videoSupportedFrameRateRanges
+                let leftMax = leftRanges.map(\.maxFrameRate).max() ?? 0
+                let rightMax = rightRanges.map(\.maxFrameRate).max() ?? 0
+                return leftMax < rightMax
+            }
+    }
 }
 
 extension CameraSessionManager: AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if output === videoOutput {
-            rollingBuffer.appendVideoSampleBuffer(sampleBuffer)
-            onRollingBufferUpdated?(rollingBuffer.currentVideoDuration)
+            let wallClockTime = ProcessInfo.processInfo.systemUptime
+            let accepted = rollingRecorder.appendSampleBuffer(sampleBuffer, wallClockTime: wallClockTime)
+            diagnostics.recordVideoCallback(accepted: accepted, at: wallClockTime)
+            if (wallClockTime - lastRollingBufferStatusUpdateWallClockTime) >= rollingBufferStatusUpdateInterval {
+                lastRollingBufferStatusUpdateWallClockTime = wallClockTime
+                onRollingBufferUpdated?(rollingRecorder.availableDurationSync())
+            }
             onVideoSampleBuffer?(sampleBuffer)
         } else if output === audioOutput {
-            rollingBuffer.appendAudioSampleBuffer(sampleBuffer)
             onAudioSampleBuffer?(sampleBuffer)
         }
     }

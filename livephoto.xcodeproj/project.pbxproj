@@ -11,9 +11,7 @@
 		1A0000020000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001020000000000000001 /* ContentView.swift */; };
 		1A0000030000000000000001 /* MomentAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001030000000000000001 /* MomentAsset.swift */; };
 		1A0000040000000000000001 /* MomentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001040000000000000001 /* MomentStore.swift */; };
-		1A0000050000000000000001 /* RollingMediaBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001050000000000000001 /* RollingMediaBuffer.swift */; };
 		1A0000060000000000000001 /* CameraSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001060000000000000001 /* CameraSessionManager.swift */; };
-		1A0000070000000000000001 /* MomentVideoComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001070000000000000001 /* MomentVideoComposer.swift */; };
 		1A0000080000000000000001 /* MomentCaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001080000000000000001 /* MomentCaptureCoordinator.swift */; };
 		1A0000090000000000000001 /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001090000000000000001 /* CameraPreviewView.swift */; };
 		1A00000A0000000000000001 /* CaptureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00010A0000000000000001 /* CaptureViewModel.swift */; };
@@ -22,6 +20,11 @@
 		1A00000D0000000000000001 /* MomentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00010D0000000000000001 /* MomentDetailView.swift */; };
 		1A00000E0000000000000001 /* PreviewImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00010E0000000000000001 /* PreviewImageLoader.swift */; };
 		1A00000F0000000000000001 /* VideoExportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001100000000000000001 /* VideoExportManager.swift */; };
+		1A0000100000000000000001 /* CaptureDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001110000000000000001 /* CaptureDiagnostics.swift */; };
+		1A0000110000000000000001 /* RollingSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001120000000000000001 /* RollingSegment.swift */; };
+		1A0000120000000000000001 /* RollingSegmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001130000000000000001 /* RollingSegmentStore.swift */; };
+		1A0000130000000000000001 /* RollingEncodedRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001140000000000000001 /* RollingEncodedRecorder.swift */; };
+		1A0000140000000000000001 /* ExperimentalClipAssembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001150000000000000001 /* ExperimentalClipAssembler.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,9 +33,7 @@
 		1A0001020000000000000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1A0001030000000000000001 /* MomentAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentAsset.swift; sourceTree = "<group>"; };
 		1A0001040000000000000001 /* MomentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentStore.swift; sourceTree = "<group>"; };
-		1A0001050000000000000001 /* RollingMediaBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollingMediaBuffer.swift; sourceTree = "<group>"; };
 		1A0001060000000000000001 /* CameraSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSessionManager.swift; sourceTree = "<group>"; };
-		1A0001070000000000000001 /* MomentVideoComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentVideoComposer.swift; sourceTree = "<group>"; };
 		1A0001080000000000000001 /* MomentCaptureCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentCaptureCoordinator.swift; sourceTree = "<group>"; };
 		1A0001090000000000000001 /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
 		1A00010A0000000000000001 /* CaptureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureViewModel.swift; sourceTree = "<group>"; };
@@ -42,6 +43,11 @@
 		1A00010E0000000000000001 /* PreviewImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewImageLoader.swift; sourceTree = "<group>"; };
 		1A00010F0000000000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A0001100000000000000001 /* VideoExportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoExportManager.swift; sourceTree = "<group>"; };
+		1A0001110000000000000001 /* CaptureDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureDiagnostics.swift; sourceTree = "<group>"; };
+		1A0001120000000000000001 /* RollingSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollingSegment.swift; sourceTree = "<group>"; };
+		1A0001130000000000000001 /* RollingSegmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollingSegmentStore.swift; sourceTree = "<group>"; };
+		1A0001140000000000000001 /* RollingEncodedRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollingEncodedRecorder.swift; sourceTree = "<group>"; };
+		1A0001150000000000000001 /* ExperimentalClipAssembler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentalClipAssembler.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,10 +112,13 @@
 		1A0000A60000000000000001 /* Camera */ = {
 			isa = PBXGroup;
 			children = (
-				1A0001050000000000000001 /* RollingMediaBuffer.swift */,
 				1A0001060000000000000001 /* CameraSessionManager.swift */,
-				1A0001070000000000000001 /* MomentVideoComposer.swift */,
 				1A0001100000000000000001 /* VideoExportManager.swift */,
+				1A0001110000000000000001 /* CaptureDiagnostics.swift */,
+				1A0001120000000000000001 /* RollingSegment.swift */,
+				1A0001130000000000000001 /* RollingSegmentStore.swift */,
+				1A0001140000000000000001 /* RollingEncodedRecorder.swift */,
+				1A0001150000000000000001 /* ExperimentalClipAssembler.swift */,
 				1A0001080000000000000001 /* MomentCaptureCoordinator.swift */,
 			);
 			path = Camera;
@@ -206,9 +215,7 @@
 				1A0000020000000000000001 /* ContentView.swift in Sources */,
 				1A0000030000000000000001 /* MomentAsset.swift in Sources */,
 				1A0000040000000000000001 /* MomentStore.swift in Sources */,
-				1A0000050000000000000001 /* RollingMediaBuffer.swift in Sources */,
 				1A0000060000000000000001 /* CameraSessionManager.swift in Sources */,
-				1A0000070000000000000001 /* MomentVideoComposer.swift in Sources */,
 				1A0000080000000000000001 /* MomentCaptureCoordinator.swift in Sources */,
 				1A0000090000000000000001 /* CameraPreviewView.swift in Sources */,
 				1A00000A0000000000000001 /* CaptureViewModel.swift in Sources */,
@@ -217,6 +224,11 @@
 				1A00000D0000000000000001 /* MomentDetailView.swift in Sources */,
 				1A00000E0000000000000001 /* PreviewImageLoader.swift in Sources */,
 				1A00000F0000000000000001 /* VideoExportManager.swift in Sources */,
+				1A0000100000000000000001 /* CaptureDiagnostics.swift in Sources */,
+				1A0000110000000000000001 /* RollingSegment.swift in Sources */,
+				1A0000120000000000000001 /* RollingSegmentStore.swift in Sources */,
+				1A0000130000000000000001 /* RollingEncodedRecorder.swift in Sources */,
+				1A0000140000000000000001 /* ExperimentalClipAssembler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

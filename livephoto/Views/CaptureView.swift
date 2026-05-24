@@ -76,7 +76,7 @@ struct CaptureView: View {
                     }
 
                     if viewModel.selectedMode == .experimentalPreRoll {
-                        Text("实验模式会启用低帧率前 3 秒预缓存，预览可能不如稳定模式顺滑。当前已缓存 \(viewModel.availablePreRollSeconds, specifier: "%.1f") 秒。")
+                        Text("实验模式会启用前 3 秒滚动编码缓存，并在拍摄后补齐后 1 秒片段。当前已缓存 \(viewModel.availablePreRollSeconds, specifier: "%.1f") 秒。")
                             .foregroundStyle(.white)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
@@ -190,9 +190,16 @@ struct CaptureView: View {
     }
 
     private var debugStateLine: String? {
-        guard let latestMoment = viewModel.latestMoment else {
-            return "cap=\(viewModel.isCapturing ? 1 : 0) bg=\(viewModel.isBackgroundProcessing ? 1 : 0) phase=\(viewModel.processingPhase) latest=nil"
+        let statePrefix: String
+        if let latestMoment = viewModel.latestMoment {
+            statePrefix = "cap=\(viewModel.isCapturing ? 1 : 0) bg=\(viewModel.isBackgroundProcessing ? 1 : 0) phase=\(viewModel.processingPhase) status=\(latestMoment.status.rawValue) mode=\(latestMoment.captureMode.rawValue)"
+        } else {
+            statePrefix = "cap=\(viewModel.isCapturing ? 1 : 0) bg=\(viewModel.isBackgroundProcessing ? 1 : 0) phase=\(viewModel.processingPhase) latest=nil"
         }
-        return "cap=\(viewModel.isCapturing ? 1 : 0) bg=\(viewModel.isBackgroundProcessing ? 1 : 0) phase=\(viewModel.processingPhase) status=\(latestMoment.status.rawValue) mode=\(latestMoment.captureMode.rawValue)"
+
+        if let diagnosticsLine = viewModel.diagnosticsLine {
+            return "\(statePrefix) \(diagnosticsLine)"
+        }
+        return statePrefix
     }
 }
