@@ -71,13 +71,17 @@ struct MomentDetailView: View {
     }
 
     private var footerText: String {
+        let breakdown = moment.displayDurationBreakdown
+
         switch moment.status {
         case .captured, .processing:
             return "动态片段处理中，完成后可长按查看"
         case .failed:
             return "动态片段导出失败，仅保留主图"
         case .ready:
-            return moment.preDuration > 0 ? "长按查看前 3 秒 + 后 1 秒片段" : "长按查看拍照后的 1 秒片段"
+            return breakdown.pre > 0
+                ? "长按查看前 \(breakdown.pre) 秒 + 后 \(breakdown.post) 秒片段"
+                : "长按查看拍照后的 \(breakdown.post) 秒片段"
         }
     }
 }

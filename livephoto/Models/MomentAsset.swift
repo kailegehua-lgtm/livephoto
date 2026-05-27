@@ -117,4 +117,20 @@ struct MomentAsset: Codable, Identifiable, Equatable {
         width = try container.decode(Int.self, forKey: .width)
         height = try container.decode(Int.self, forKey: .height)
     }
+
+    var displayDurationBreakdown: (pre: Int, post: Int) {
+        let totalSeconds = max(Int(duration.rounded()), 0)
+        let roundedPreSeconds = max(Int(coverTimestamp.rounded()), 0)
+
+        guard totalSeconds > 0 else {
+            return (
+                pre: max(Int(preDuration.rounded()), 0),
+                post: max(Int(postDuration.rounded()), 0)
+            )
+        }
+
+        let preSeconds = min(roundedPreSeconds, totalSeconds)
+        let postSeconds = max(totalSeconds - preSeconds, 0)
+        return (pre: preSeconds, post: postSeconds)
+    }
 }

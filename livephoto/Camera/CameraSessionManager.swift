@@ -95,12 +95,12 @@ final class CameraSessionManager: NSObject, ObservableObject {
 
     func setCaptureMode(_ mode: CaptureMode) {
         sessionQueue.async {
-            guard self.activeMode != mode else {
-                return
+            let modeChanged = self.activeMode != mode
+            self.activeMode = mode
+            if modeChanged || !self.session.inputs.isEmpty || !self.session.outputs.isEmpty {
+                self.configureOutputs(for: mode)
             }
 
-            self.activeMode = mode
-            self.configureOutputs(for: mode)
             if mode == .stablePostRoll {
                 Task {
                     await self.rollingRecorder.stopRunning(removeFiles: true)

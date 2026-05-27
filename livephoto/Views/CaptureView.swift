@@ -155,7 +155,7 @@ struct CaptureView: View {
             .navigationTitle("拍摄")
             .navigationBarTitleDisplayMode(.inline)
         }
-        .task {
+        .onAppear {
             viewModel.prepare()
         }
         .onDisappear {

@@ -302,11 +302,13 @@ struct MomentListView: View {
     }
 
     private func summaryText(for moment: MomentAsset) -> String {
-        if moment.preDuration > 0 {
-            return "前 \(Int(moment.preDuration)) 秒 + 后 \(Int(moment.postDuration)) 秒"
+        let breakdown = moment.displayDurationBreakdown
+
+        if breakdown.pre > 0 {
+            return "前 \(breakdown.pre) 秒 + 后 \(breakdown.post) 秒"
         }
 
-        return "主图 + 后 \(Int(moment.postDuration)) 秒片段"
+        return "主图 + 后 \(breakdown.post) 秒片段"
     }
 
     private func modeTag(for moment: MomentAsset) -> String {
