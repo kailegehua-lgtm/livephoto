@@ -1,11 +1,7 @@
 import SwiftUI
 
 struct CaptureView: View {
-    @StateObject private var viewModel: CaptureViewModel
-
-    init(store: MomentStore) {
-        _viewModel = StateObject(wrappedValue: CaptureViewModel(store: store))
-    }
+    @ObservedObject var viewModel: CaptureViewModel
 
     var body: some View {
         NavigationStack {
@@ -157,9 +153,6 @@ struct CaptureView: View {
         }
         .onAppear {
             viewModel.prepare()
-        }
-        .onDisappear {
-            viewModel.stop()
         }
     }
 
