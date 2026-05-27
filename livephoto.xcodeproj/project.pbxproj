@@ -25,6 +25,8 @@
 		1A0000120000000000000001 /* RollingSegmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001130000000000000001 /* RollingSegmentStore.swift */; };
 		1A0000130000000000000001 /* RollingEncodedRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001140000000000000001 /* RollingEncodedRecorder.swift */; };
 		1A0000140000000000000001 /* ExperimentalClipAssembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0001150000000000000001 /* ExperimentalClipAssembler.swift */; };
+		1A0000150000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A0001160000000000000001 /* Assets.xcassets */; };
+		1A0000160000000000000001 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A0001170000000000000001 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +50,8 @@
 		1A0001130000000000000001 /* RollingSegmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollingSegmentStore.swift; sourceTree = "<group>"; };
 		1A0001140000000000000001 /* RollingEncodedRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollingEncodedRecorder.swift; sourceTree = "<group>"; };
 		1A0001150000000000000001 /* ExperimentalClipAssembler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentalClipAssembler.swift; sourceTree = "<group>"; };
+		1A0001160000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1A0001170000000000000001 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +83,8 @@
 				1A0000A60000000000000001 /* Camera */,
 				1A0000A70000000000000001 /* ViewModels */,
 				1A0000A80000000000000001 /* Views */,
+				1A0001160000000000000001 /* Assets.xcassets */,
+				1A0001170000000000000001 /* LaunchScreen.storyboard */,
 				1A00010F0000000000000001 /* Info.plist */,
 			);
 			path = livephoto;
@@ -201,6 +207,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A0000150000000000000001 /* Assets.xcassets in Resources */,
+				1A0000160000000000000001 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
