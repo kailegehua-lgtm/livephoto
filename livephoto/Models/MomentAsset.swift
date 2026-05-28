@@ -1,27 +1,33 @@
 import Foundation
 
-enum CaptureMode: String, Codable, CaseIterable, Identifiable {
-    case stablePostRoll
-    case experimentalPreRoll
+enum CaptureMode: String, Codable, Identifiable {
+    case rollingReplay
 
     var id: String { rawValue }
 
     var title: String {
-        switch self {
-        case .stablePostRoll:
-            return "稳定模式"
-        case .experimentalPreRoll:
-            return "实验模式"
-        }
+        "动态回溯"
     }
 
     var summary: String {
-        switch self {
-        case .stablePostRoll:
-            return "主图 + 后 1 秒片段"
-        case .experimentalPreRoll:
-            return "前 3 秒 + 后 1 秒滚动编码回溯"
+        "前 3 秒 + 后 1 秒滚动编码回溯"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+
+        switch rawValue {
+        case Self.rollingReplay.rawValue, "stablePostRoll", "experimentalPreRoll":
+            self = .rollingReplay
+        default:
+            self = .rollingReplay
         }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
     }
 }
 
@@ -108,7 +114,7 @@ struct MomentAsset: Codable, Identifiable, Equatable {
         createdAt = try container.decode(Date.self, forKey: .createdAt)
         photoURL = try container.decode(URL.self, forKey: .photoURL)
         videoURL = try container.decode(URL.self, forKey: .videoURL)
-        captureMode = try container.decodeIfPresent(CaptureMode.self, forKey: .captureMode) ?? .stablePostRoll
+        captureMode = try container.decodeIfPresent(CaptureMode.self, forKey: .captureMode) ?? .rollingReplay
         status = try container.decodeIfPresent(MomentStatus.self, forKey: .status) ?? .ready
         preDuration = try container.decode(Double.self, forKey: .preDuration)
         postDuration = try container.decode(Double.self, forKey: .postDuration)

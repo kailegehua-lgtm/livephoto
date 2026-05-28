@@ -9,7 +9,6 @@ final class CaptureViewModel: ObservableObject {
     @Published private(set) var availablePreRollSeconds: Double = 0.0
     @Published private(set) var authorizationState: CameraSessionManager.AuthorizationState = .unknown
     @Published private(set) var diagnosticsLine: String?
-    @Published var selectedMode: CaptureMode = .stablePostRoll
     @Published var latestMoment: MomentAsset?
     @Published var errorMessage: String?
 
@@ -28,7 +27,6 @@ final class CaptureViewModel: ObservableObject {
 
     func prepare() {
         cameraManager.requestAccessAndConfigure()
-        cameraManager.setCaptureMode(selectedMode)
     }
 
     func stop() {
@@ -39,15 +37,11 @@ final class CaptureViewModel: ObservableObject {
         errorMessage = nil
         Task {
             do {
-                latestMoment = try await coordinator.captureMoment(mode: selectedMode)
+                latestMoment = try await coordinator.captureMoment()
             } catch {
                 errorMessage = error.localizedDescription
             }
         }
-    }
-
-    func updateCaptureMode(_ mode: CaptureMode) {
-        cameraManager.setCaptureMode(mode)
     }
 
     private func bindState() {

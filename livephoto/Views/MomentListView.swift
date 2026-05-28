@@ -312,12 +312,7 @@ struct MomentListView: View {
     }
 
     private func modeTag(for moment: MomentAsset) -> String {
-        switch moment.captureMode {
-        case .stablePostRoll:
-            return "稳定模式"
-        case .experimentalPreRoll:
-            return "实验模式"
-        }
+        moment.captureMode.title
     }
 
     private func statusColor(for status: MomentStatus) -> Color {
