@@ -15,7 +15,6 @@ final class CameraSessionManager: NSObject, ObservableObject {
     let photoOutput = AVCapturePhotoOutput()
     let videoOutput = AVCaptureVideoDataOutput()
     let audioOutput = AVCaptureAudioDataOutput()
-    let movieFileOutput = AVCaptureMovieFileOutput()
     let rollingRecorder = RollingEncodedRecorder()
     let diagnostics = CaptureDiagnostics()
 
@@ -24,7 +23,6 @@ final class CameraSessionManager: NSObject, ObservableObject {
     private let sessionQueue = DispatchQueue(label: "livephoto.camera.session")
     private let videoOutputQueue = DispatchQueue(label: "livephoto.camera.video-output")
     private let audioOutputQueue = DispatchQueue(label: "livephoto.camera.audio-output")
-    private var activeMode: CaptureMode = .stablePostRoll
     private let rollingBufferStatusUpdateInterval: TimeInterval = 0.2
     private var lastRollingBufferStatusUpdateWallClockTime: TimeInterval = 0
 
@@ -76,6 +74,7 @@ final class CameraSessionManager: NSObject, ObservableObject {
                         return
                     }
                     self.session.startRunning()
+                    self.rollingRecorder.startRunning()
                 }
             }
         }
@@ -90,25 +89,6 @@ final class CameraSessionManager: NSObject, ObservableObject {
         }
         Task {
             await self.rollingRecorder.stopRunning(removeFiles: true)
-        }
-    }
-
-    func setCaptureMode(_ mode: CaptureMode) {
-        sessionQueue.async {
-            let modeChanged = self.activeMode != mode
-            self.activeMode = mode
-            if modeChanged || !self.session.inputs.isEmpty || !self.session.outputs.isEmpty {
-                self.configureOutputs(for: mode)
-            }
-
-            if mode == .stablePostRoll {
-                Task {
-                    await self.rollingRecorder.stopRunning(removeFiles: true)
-                }
-            } else {
-                self.rollingRecorder.startRunning()
-            }
-            self.lastRollingBufferStatusUpdateWallClockTime = 0
         }
     }
 
@@ -171,14 +151,7 @@ final class CameraSessionManager: NSObject, ObservableObject {
                 }
             }
 
-            if session.canAddOutput(movieFileOutput) {
-                session.addOutput(movieFileOutput)
-                movieFileOutput.movieFragmentInterval = .invalid
-                let connection = movieFileOutput.connection(with: .video)
-                connection?.preferredVideoStabilizationMode = .auto
-            }
-
-            configureOutputs(for: activeMode)
+            configureOutputs()
             return true
         } catch {
             DispatchQueue.main.async {
@@ -188,30 +161,22 @@ final class CameraSessionManager: NSObject, ObservableObject {
         }
     }
 
-    private func configureOutputs(for mode: CaptureMode) {
+    private func configureOutputs() {
         session.beginConfiguration()
         defer { session.commitConfiguration() }
 
-        switch mode {
-        case .stablePostRoll:
-            if session.outputs.contains(videoOutput) {
-                videoOutput.setSampleBufferDelegate(nil, queue: nil)
-                session.removeOutput(videoOutput)
-            }
-        case .experimentalPreRoll:
-            guard !session.outputs.contains(videoOutput) else {
-                return
-            }
+        guard !session.outputs.contains(videoOutput) else {
+            return
+        }
 
-            videoOutput.alwaysDiscardsLateVideoFrames = true
-            videoOutput.videoSettings = [
-                kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)
-            ]
-            videoOutput.setSampleBufferDelegate(self, queue: videoOutputQueue)
-            if session.canAddOutput(videoOutput) {
-                session.addOutput(videoOutput)
-                videoOutput.connection(with: .video)?.preferredVideoStabilizationMode = .off
-            }
+        videoOutput.alwaysDiscardsLateVideoFrames = true
+        videoOutput.videoSettings = [
+            kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)
+        ]
+        videoOutput.setSampleBufferDelegate(self, queue: videoOutputQueue)
+        if session.canAddOutput(videoOutput) {
+            session.addOutput(videoOutput)
+            videoOutput.connection(with: .video)?.preferredVideoStabilizationMode = .off
         }
     }
 
