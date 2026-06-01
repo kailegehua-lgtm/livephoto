@@ -8,25 +8,14 @@ enum ExperimentalClipAssemblerError: Error {
 }
 
 final class ExperimentalClipAssembler {
-    private let exportQueue = DispatchQueue(label: "livephoto.experimental-clip-assembler")
-
     func assembleClip(from plan: RollingClipPlan) async throws -> (url: URL, duration: Double, frameCount: Int) {
-        try await withCheckedThrowingContinuation { continuation in
-            exportQueue.async {
-                do {
-                    let outputURL = FileManager.default.temporaryDirectory
-                        .appendingPathComponent(UUID().uuidString)
-                        .appendingPathExtension("mov")
-                    let result = try self.makeClip(from: plan, outputURL: outputURL)
-                    continuation.resume(returning: result)
-                } catch {
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
+        let outputURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension("mov")
+        return try await makeClip(from: plan, outputURL: outputURL)
     }
 
-    private func makeClip(from plan: RollingClipPlan, outputURL: URL) throws -> (url: URL, duration: Double, frameCount: Int) {
+    private func makeClip(from plan: RollingClipPlan, outputURL: URL) async throws -> (url: URL, duration: Double, frameCount: Int) {
         let composition = AVMutableComposition()
         guard let compositionTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else {
             throw ExperimentalClipAssemblerError.missingVideoTrack
@@ -89,14 +78,22 @@ final class ExperimentalClipAssembler {
         exportSession.outputFileType = .mov
         exportSession.shouldOptimizeForNetworkUse = false
 
-        let semaphore = DispatchSemaphore(value: 0)
-        exportSession.exportAsynchronously {
-            semaphore.signal()
-        }
-        semaphore.wait()
-
-        if let error = exportSession.error {
-            throw error
+        // AVAssetExportSession is configured once, exported once, and inspected
+        // after completion, so this narrow escape hatch avoids blocking a thread.
+        nonisolated(unsafe) let session = exportSession
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            session.exportAsynchronously {
+                switch session.status {
+                case .completed:
+                    continuation.resume()
+                case .failed:
+                    continuation.resume(throwing: session.error ?? ExperimentalClipAssemblerError.exportSessionCreationFailed)
+                case .cancelled:
+                    continuation.resume(throwing: session.error ?? CancellationError())
+                default:
+                    continuation.resume(throwing: session.error ?? ExperimentalClipAssemblerError.exportSessionCreationFailed)
+                }
+            }
         }
 
         let duration = composition.duration.seconds.isFinite ? composition.duration.seconds : 0.0
